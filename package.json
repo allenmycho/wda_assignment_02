@@ -1,12 +1,16 @@
 {
-  "name": "fb_auth",
+  "name": "wda_assignment_02",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bootstrap": "^3.3.7",
     "firebase": "^4.3.0",
+    "material-ui": "^0.19.2",
     "react": "^15.6.1",
+    "react-bootstrap": "^0.31.3",
     "react-dom": "^15.6.1",
-    "react-scripts": "1.0.13"
+    "react-scripts": "^1.0.13",
+    "react-tap-event-plugin": "^2.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

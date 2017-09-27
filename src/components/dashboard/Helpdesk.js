@@ -142,39 +142,39 @@ class Helpdesk extends Component {
                         </Table>
                     </Col>
                     {selectedTicket !== null && (
-                    <Col md={5}>
-                        <Jumbotron style={{padding: 10}}>
-                            <Button block bsStyle="danger" onClick={this.closeDialogClick}>Close Dialog</Button>
-                            <h3 className="text-uppercase">Ticket Details</h3>
-                            <p><b>ID: </b>{selectedTicket.id}</p>
-                            <p><b>OS: </b><br/>{selectedTicket.os}</p>
-                            <p><b>ISSUE: </b><br/>{selectedTicket.issue}</p>
-                            <p><b>STATUS: </b><br/>{selectedTicket.status}</p>
-                            <p>
-                                <b>COMMENT: </b><br/>
-                                {selectedTicket.comments.map((comment, i) => (
-                                    <p>{comment.comment}</p>
-                                ))}
-                            </p>
-                            {techUsers.length > 0 && (
-                                <div>
-                                    <hr/>
-                                    <h3 className="text-uppercase">Assign to tech</h3>
-                                    <select className="form-control" onChange={this.handleTechChange} defaultValue="-1">
-                                    <option value="-1" defaultValue disabled>Select a tech user</option>
-                                    {techUsers.map((user, i) => (
-                                        <option key={i} value={user.id}>{user.name}</option>
+                        <Col md={5}>
+                            <Jumbotron style={{padding: 10}}>
+                                <Button block bsStyle="danger" onClick={this.closeDialogClick}>Close Dialog</Button>
+                                <h3 className="text-uppercase">Ticket Details</h3>
+                                <p><b>ID: </b>{selectedTicket.id}</p>
+                                <p><b>OS: </b><br/>{selectedTicket.os}</p>
+                                <p><b>ISSUE: </b><br/>{selectedTicket.issue}</p>
+                                <p><b>STATUS: </b><br/>{selectedTicket.status}</p>
+                                <p>
+                                    <b>COMMENT: </b><br/>
+                                    {selectedTicket.comments.map((comment, i) => (
+                                        <p>{comment.comment}</p>
                                     ))}
-                                    </select>
+                                </p>
+                                {techUsers.length > 0 && (
+                                    <div>
+                                        <hr/>
+                                        <h3 className="text-uppercase">Assign to tech</h3>
+                                        <select className="form-control" onChange={this.handleTechChange} defaultValue="-1">
+                                            <option value="-1" defaultValue disabled>Select a tech user</option>
+                                            {techUsers.map((user, i) => (
+                                                <option key={i} value={user.id}>{user.name}</option>
+                                            ))}
+                                        </select>
 
-                                    <div className="clearfix"><br/>
-                                        <Button className="pull-right" bsStyle="success" onClick={this.assignTicketToTech}>Assign</Button>
+                                        <div className="clearfix"><br/>
+                                            <Button className="pull-right" bsStyle="success" onClick={this.assignTicketToTech}>Assign</Button>
+                                        </div>
                                     </div>
-                                </div>
                                 )
-                            }
-                        </Jumbotron>
-                    </Col>
+                                }
+                            </Jumbotron>
+                        </Col>
                     )}
                 </Row>
             </div>

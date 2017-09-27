@@ -41,23 +41,22 @@ class Tech extends Component {
             <div>
                 <h1>My Tickets</h1>
                 {tickets.length < 1 ? (
-                    <div className="alert alert-info">You have not been assigned any tickets.</div>
-                )
-                : tickets.map((ticket, i) => (
-                    <Panel key={i} header={ticket.id}>
-                        <p>OS : {ticket.os}</p>
-                        <p>ISSUE : {ticket.issue}</p>
-                        <p>STATUS : {ticket.status}</p>
-                        <p>COMMENTS :
-                            {ticket.comments.map((comment, i) => (
-                                <div>{comment.comment}</div>
-                            ))}
-                        </p>
+                        <div className="alert alert-info">You have not been assigned any tickets.</div>
+                    )
+                    : tickets.map((ticket, i) => (
+                        <Panel key={i} header={ticket.id}>
+                            <p>OS : {ticket.os}</p>
+                            <p>ISSUE : {ticket.issue}</p>
+                            <p>STATUS : {ticket.status}</p>
+                            <p>COMMENTS :
+                                {ticket.comments.map((comment, i) => (
+                                    <p>{i === 0 ? "User" : "Staff"}: {comment.comment}</p>
+                                ))}
+                            </p>
 
 
-
-                    </Panel>
-                ))}
+                        </Panel>
+                    ))}
             </div>
         );
     }

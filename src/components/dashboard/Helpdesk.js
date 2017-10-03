@@ -4,18 +4,66 @@ import { Table, Row, Col, Jumbotron, Button } from 'react-bootstrap';
 import firebase from 'firebase';
 
 class Helpdesk extends Component {
-    state = {
-        tickets: [],
-        selectedTicket: null,
-        techUsers: [],
-        selectedTech: null
-    };
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            tickets: [],
+            selectedTicket: null,
+            techUsers: [],
+            selectedTech: null,
+            priority: 1,
+            escLevel: 'low'
+        };
+
+        // this.handlePriority = this.handlePriority.bind(this);
+        // this.handleEscLevel = this.handleEscLevel.bind(this);
+    }
 
     /* Once component has mounted, fetch from API + firebase */
     componentDidMount() {
+
+        this.fetchTicketList()
+    }
+
+    /* Toggle the ticket dialog */
+    ticketDetailsClick = (ticket) => {
+        const { selectedTicket } = this.state;
+        this.setState({
+            selectedTicket: (selectedTicket !== null && selectedTicket.id === ticket.id ? null : ticket)
+        });
+    }
+
+    /* Close button for dialog */
+    closeDialogClick = () => {
+        this.setState({
+            selectedTicket: null
+        })
+    }
+
+    /* Update the selected tech from dropdown box */
+    handleTechChange = (e) => {
+        this.setState({
+            selectedTech: e.target.value
+        });
+    }
+
+    handlePriority = (e) => {
+        this.setState({
+            priority: e.target.value
+        });
+    }
+
+    handleEscLevel = (e) => {
+        this.setState({
+            escLevel: e.target.value
+        });
+    }
+
+    fetchTicketList() {
         /* Fetch all tickets and check which tickets have
-            an assigned tech
-         */
+           an assigned tech
+        */
         fetch(apiurl + '/api/tickets')
             .then((response) => response.json())
             .then((responseJson) => {
@@ -56,25 +104,13 @@ class Helpdesk extends Component {
         })
     }
 
-    /* Toggle the ticket dialog */
-    ticketDetailsClick = (ticket) => {
-        const { selectedTicket } = this.state;
-        this.setState({
-            selectedTicket: (selectedTicket !== null && selectedTicket.id === ticket.id ? null : ticket)
-        });
-    }
-
-    /* Close button for dialog */
-    closeDialogClick = () => {
-        this.setState({
-            selectedTicket: null
-        })
-    }
-
-    /* Update the selected tech from dropdown box */
-    handleTechChange = (e) => {
-        this.setState({
-            selectedTech: e.target.value
+    fetchTicketDetails() {
+        fetch(apiurl + '/api/tickets', {
+            method: 'put',
+            body: JSON.stringify({
+                priority: document.getElementById('priority').value,
+                escLevel: document.getElementById('escLevel').value
+            })
         });
     }
 
@@ -88,11 +124,19 @@ class Helpdesk extends Component {
         const data = {};
         data['ticket/' + this.state.selectedTicket.id] = {
             ticket_id: this.state.selectedTicket.id,
-            user_id: this.state.selectedTech // stored Tech ID
+            user_id: this.state.selectedTech, // stored Tech ID
         };
         firebase.database().ref().update(data)
+        this.fetchTicketDetails();
         alert('Tech successfully assigned to ticket!');
-        window.location.reload();
+
+        this.setState({
+            selectedTicket: null
+        })
+
+        this.fetchTicketList();
+
+        // window.location.reload();
     }
 
     /* Render the page! */
@@ -100,7 +144,7 @@ class Helpdesk extends Component {
         Do you think you could split this page into separate sub-components?
      */
     render () {
-        const vm = this
+        const vm = this;
         const { selectedTicket, tickets, techUsers } = this.state;
 
         return (
@@ -118,6 +162,8 @@ class Helpdesk extends Component {
                                 <th>OS</th>
                                 <th>Issue</th>
                                 <th>Status</th>
+                                <th>Priority</th>
+                                <th>Esc Level</th>
                                 <th>Comments</th>
                             </tr>
                             </thead>
@@ -128,6 +174,8 @@ class Helpdesk extends Component {
                                     <td>{ticket.os}</td>
                                     <td>{ticket.issue}</td>
                                     <td>{ticket.status}</td>
+                                    <td>{ticket.priority}</td>
+                                    <td>{ticket.escLevel}</td>
                                     <td>
                                         {ticket.comments.map((comment, i) => (
                                             <p>{comment.comment}</p>
@@ -150,6 +198,8 @@ class Helpdesk extends Component {
                                 <p><b>OS: </b><br/>{selectedTicket.os}</p>
                                 <p><b>ISSUE: </b><br/>{selectedTicket.issue}</p>
                                 <p><b>STATUS: </b><br/>{selectedTicket.status}</p>
+                                <p><b>PRIORITY: </b><br/>{selectedTicket.priority}</p>
+                                <p><b>ESC LEVEL: </b><br/>{selectedTicket.escLevel}</p>
                                 <p>
                                     <b>COMMENT: </b><br/>
                                     {selectedTicket.comments.map((comment, i) => (
@@ -159,6 +209,21 @@ class Helpdesk extends Component {
                                 {techUsers.length > 0 && (
                                     <div>
                                         <hr/>
+
+                                        <h3 className="text-uppercase">Select Priority</h3>
+                                        <select id="priority" className="form-control" value={this.state.priority} onChange={this.handlePriority}>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                        </select>
+
+                                        <h3 className="text-uppercase">Select EscLevel</h3>
+                                        <select id="escLevel" className="form-control" value={this.state.escLevel} onChange={this.handleEscLevel}>
+                                            <option value="Low">Low</option>
+                                            <option value="Moderate">Moderate</option>
+                                            <option value="High">High</option>
+                                        </select>
+
                                         <h3 className="text-uppercase">Assign to tech</h3>
                                         <select className="form-control" onChange={this.handleTechChange} defaultValue="-1">
                                             <option value="-1" defaultValue disabled>Select a tech user</option>
@@ -171,8 +236,7 @@ class Helpdesk extends Component {
                                             <Button className="pull-right" bsStyle="success" onClick={this.assignTicketToTech}>Assign</Button>
                                         </div>
                                     </div>
-                                )
-                                }
+                                )}
                             </Jumbotron>
                         </Col>
                     )}

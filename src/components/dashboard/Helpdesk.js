@@ -72,7 +72,6 @@ class Helpdesk extends Component {
                     firebase.database().ref('ticket/'+responseJson[ele].id).on('value', (snapshot) => {
                         if(snapshot.val() === null) {
                             pendingTickets.push(responseJson[ele]);
-
                             /* Force the view to re-render (async problem) */
                             this.forceUpdate();
                         }
@@ -105,11 +104,16 @@ class Helpdesk extends Component {
     }
 
     fetchTicketDetails() {
-        fetch(apiurl + '/api/tickets', {
-            method: 'put',
+        
+        fetch(apiurl + 'api/tickets/'+ this.state.selectedTicket.id, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            method: 'PUT',
             body: JSON.stringify({
-                priority: document.getElementById('priority').value,
-                escLevel: document.getElementById('escLevel').value
+                priority : this.state.priority,
+                escLevel : this.state.escLevel
             })
         });
     }
@@ -178,7 +182,7 @@ class Helpdesk extends Component {
                                     <td>{ticket.escLevel}</td>
                                     <td>
                                         {ticket.comments.map((comment, i) => (
-                                            <p>{comment.comment}</p>
+                                            <p key={i}>{comment.comment}</p>
                                         ))}
                                     </td>
                                     <td>
@@ -203,7 +207,7 @@ class Helpdesk extends Component {
                                 <p>
                                     <b>COMMENT: </b><br/>
                                     {selectedTicket.comments.map((comment, i) => (
-                                        <p>{comment.comment}</p>
+                                        <span key={i}>{comment.comment}</span>
                                     ))}
                                 </p>
                                 {techUsers.length > 0 && (

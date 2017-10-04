@@ -64,7 +64,7 @@ class Helpdesk extends Component {
         /* Fetch all tickets and check which tickets have
            an assigned tech
         */
-        fetch(apiurl + '/api/tickets')
+        fetch(apiurl + 'api/tickets')
             .then((response) => response.json())
             .then((responseJson) => {
                 const pendingTickets = [];

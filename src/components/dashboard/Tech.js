@@ -4,35 +4,39 @@ import firebase from 'firebase';
 import { Panel } from 'react-bootstrap';
 
 //WYSIWYG Editor
-import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
+import { convertFromRaw } from 'draft-js';
+
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
 
 
 //UI Button LIB
 import { Button } from 'react-bootstrap';
 
-
+const content = {"entityMap":{},"blocks":[{"key":"637gr","text":"Initialized from content state.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}]};
 
 class Tech extends Component {
     constructor(props) {
         super(props);
+        const contentState = convertFromRaw(content);
         this.state = {
             tickets: [],
-            textEditor: EditorState.createEmpty(),
+            contentState: {},
             selectedTicket: 1,
             status: "",
             selectedHelpdesk: null,
             helpdeskUsers: [],
             ticket_details_id: null
         };
+        
+        //BINDING OF FORM ELEMENTS
+        this.handleStatusChange = this.handleStatusChange.bind(this);
+        this.handleIdChange = this.handleIdChange.bind(this);
     };
 
     componentDidMount() {
         // Call this function when the page is loaded.
-        this.fetchTicketToTech()
+        this.fetchTicketToTech();
     }
 
     fetchTicketToTech() {
@@ -77,9 +81,9 @@ class Tech extends Component {
 
 
     // WYSIWYG Function
-    onEditorStateChange: Function = (textEditor) => {
+    onContentStateChange: Function = (contentState) => {
         this.setState({
-          textEditor: textEditor
+          contentState,
         });
     };
 
@@ -89,6 +93,7 @@ class Tech extends Component {
         this.setState({
             status: e.target.value
         });
+        console.log(this.state.status);
     };
 
     // Select the id to add comments or change status
@@ -96,6 +101,7 @@ class Tech extends Component {
         this.setState({
             selectedTicket: e.target.value
         });
+        console.log(this.state.selectedTicket);
     }
 
 
@@ -108,14 +114,14 @@ class Tech extends Component {
                 'Content-Type': 'application/json'
             },
             method: 'POST',
-            body: {
-                ticket_details_id: this.state.selectedTicket.id,
-                comment : this.state.textEditor
-            }
+            body: JSON.stringify({
+                ticket_details_id: this.state.selectedTicket,
+                comment : this.state.contentState.blocks[0].text
+            })
         });
         //CONSOLE LOG THE OUTPUTS
-        console.log("Ticket ID :"+ this.state.selectedTicket.id);
-        console.log(this.state.textEditor);
+        console.log("Ticket ID :"+ this.state.selectedTicket);
+        console.log(this.state.contentState.blocks[0].text);   
     };
 
 
@@ -148,20 +154,16 @@ class Tech extends Component {
 
     // Callback function when assign button is clicked.
     resolveTicket = () => {
-
         this.fetchStatus();
         this.fetchComment();
-
         if(this.state.selectedHelpdesk === null) {
             return;
         }
     }
 
     render () {
-        
         const { tickets, helpdeskUsers } = this.state;
-        const { textEditor } = this.state;
-
+        const { contentState } = this.state;
         return (
             <div>
                 <h1>My Tickets</h1>
@@ -177,7 +179,10 @@ class Tech extends Component {
                             <p>ESC LEVEL: {ticket.escLevel}</p>
                             <p>COMMENTS:
                                 {ticket.comments.map((comment, i) => (
-                                    <span key={i}>{i === 0 ? "User" : "Staff"}: {comment.comment}</span>
+                                    <span key={i}>
+                                        <br/>
+                                        {i === 0 ? "User" : "Staff"}: {comment.comment}
+                                    </span> 
                                 ))}
                             </p>
 
@@ -201,20 +206,20 @@ class Tech extends Component {
 
                 <h2>Add Comments</h2>
                 <Editor
-                  editorState={textEditor}
+                  defaultContentState={content}
                   wrapperClassName="demo-wrapper"
                   editorClassName="demo-editor"
-                  onEditorStateChange={this.onEditorStateChange}
+                  onContentStateChange={this.onContentStateChange}
                 />
                 <textarea
                   disabled
-                  value={draftToHtml(convertToRaw(textEditor.getCurrentContent()))}
+                  className="demo-content no-focus"
+                  value={JSON.stringify(contentState, null, 4)}
                 />
 
 
                 <h3 className="text-uppercase">Ticket Status</h3>
                 <select className="form-control" value={this.state.status} onChange={this.handleStatusChange}>
-                    {/*<option value="-1" defaultValue disabled>Select the Status</option>*/}
                     <option value="Pending">Pending</option>
                     <option value="In Progress">In Progress</option>
                     <option value="Unresolved">Unresolved</option>

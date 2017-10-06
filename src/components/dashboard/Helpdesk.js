@@ -12,7 +12,7 @@ class Helpdesk extends Component {
             selectedTicket: null,
             techUsers: [],
             selectedTech: null,
-            priority: 1,
+            priority: '1',
             escLevel: 'low'
         };
 
@@ -103,16 +103,28 @@ class Helpdesk extends Component {
         })
     }
 
-    fetchTicketDetails() {
+    fetchPriority() {
         
-        fetch(apiurl + 'api/tickets/'+ this.state.selectedTicket.id, {
+        fetch(apiurl + 'api/tickets/'+ this.state.selectedTicket.id + '/priority', {
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             },
             method: 'PUT',
             body: JSON.stringify({
-                priority : this.state.priority,
+                priority : this.state.priority
+            })
+        });
+    }
+
+    fetchEscLevel() {
+        fetch(apiurl + 'api/tickets/'+ this.state.selectedTicket.id + '/esclevel', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: 'PUT',
+            body: JSON.stringify({
                 escLevel : this.state.escLevel
             })
         });
@@ -131,7 +143,8 @@ class Helpdesk extends Component {
             user_id: this.state.selectedTech, // stored Tech ID
         };
         firebase.database().ref().update(data)
-        this.fetchTicketDetails();
+        this.fetchPriority();
+        this.fetchEscLevel();
         alert('Tech successfully assigned to ticket!');
 
         this.setState({
@@ -140,7 +153,6 @@ class Helpdesk extends Component {
 
         this.fetchTicketList();
 
-        // window.location.reload();
     }
 
     /* Render the page! */
@@ -216,6 +228,7 @@ class Helpdesk extends Component {
 
                                         <h3 className="text-uppercase">Select Priority</h3>
                                         <select id="priority" className="form-control" value={this.state.priority} onChange={this.handlePriority}>
+                                            {/*<option value="-1" defaultValue disabled>Select the Priority</option>*/}
                                             <option value="1">1</option>
                                             <option value="2">2</option>
                                             <option value="3">3</option>
@@ -223,6 +236,7 @@ class Helpdesk extends Component {
 
                                         <h3 className="text-uppercase">Select EscLevel</h3>
                                         <select id="escLevel" className="form-control" value={this.state.escLevel} onChange={this.handleEscLevel}>
+                                            {/*<option value="-1" defaultValue disabled>Select the EscLevel</option>*/}
                                             <option value="Low">Low</option>
                                             <option value="Moderate">Moderate</option>
                                             <option value="High">High</option>

@@ -110,11 +110,6 @@ class App extends Component {
                                 <Redirect to="/" />
                             )
                     )} />
-                    <footer className="text-center">
-                        <p>
-                            Example demo written by Nicholas Zuccarelli
-                        </p>
-                    </footer>
                 </div>
             </div>
         );

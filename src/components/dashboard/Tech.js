@@ -13,7 +13,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 //UI Button LIB
 import { Button } from 'react-bootstrap';
 
-const content = {"entityMap":{},"blocks":[{"key":"637gr","text":"Initialized from content state.","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}]};
+const content = {"entityMap":{},"blocks":[{"key":"637gr","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}]};
 
 class Tech extends Component {
     constructor(props) {
@@ -214,7 +214,7 @@ class Tech extends Component {
                                 {ticket.comments.map((comment, i) => (
                                     <span key={i}>
                                         <br/>
-                                        {i === 0 ? "User" : "Staff"}: {comment.comment}
+                                        <span className="boldText">{i === 0 ? "User" : "Staff"}</span>: {comment.comment}
                                     </span> 
                                 ))}
                             </p>
@@ -239,15 +239,11 @@ class Tech extends Component {
 
                 <h2>Add Comments</h2>
                 <Editor
+                  placeholder="Add Comments Here"
                   defaultContentState={content}
-                  wrapperClassName="demo-wrapper"
+                  wrapperClassName="wysEditorWrapper"
                   editorClassName="demo-editor"
                   onContentStateChange={this.onContentStateChange}
-                />
-                <textarea
-                  disabled
-                  className="demo-content no-focus"
-                  value={JSON.stringify(contentState, null, 4)}
                 />
 
 

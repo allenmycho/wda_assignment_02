@@ -7,6 +7,7 @@ class Helpdesk extends Component {
     constructor(props) {
         super(props);
 
+        //Setting initial states
         this.state = {
             tickets: [],
             selectedTicket: null,
@@ -19,7 +20,6 @@ class Helpdesk extends Component {
 
     /* Once component has mounted, fetch from API + firebase */
     componentDidMount() {
-
         this.fetchTicketList()
     }
 
@@ -45,17 +45,20 @@ class Helpdesk extends Component {
         });
     }
 
+    /*Set State for priority upon changes*/
     handlePriority = (e) => {
         this.setState({
             priority: e.target.value
         });
     }
 
+    /*Set State for escalation level upon changes*/
     handleEscLevel = (e) => {
         this.setState({
             escLevel: e.target.value
         });
     }
+
 
     fetchTicketList() {
         /* Fetch all tickets and check which tickets have
@@ -100,6 +103,7 @@ class Helpdesk extends Component {
         })
     }
 
+    //Function to UPDATE priority level of specific ticket
     fetchPriority() {
         fetch(apiurl + 'api/tickets/'+ this.state.selectedTicket.id + '/priority', {
             headers: {
@@ -113,6 +117,7 @@ class Helpdesk extends Component {
         });
     }
 
+    //Function to UPDATE escalation level of specific ticket
     fetchEscLevel() {
         fetch(apiurl + 'api/tickets/'+ this.state.selectedTicket.id + '/esclevel', {
             headers: {
@@ -126,7 +131,7 @@ class Helpdesk extends Component {
         });
     }
 
-    /* Click assign button */
+    //Click to Assign Button
     assignTicketToTech = () => {
         if(this.state.selectedTech === null) {
             return;
@@ -135,14 +140,17 @@ class Helpdesk extends Component {
         /* Add assigned ticket+tech into database*/
         const data = {};
 
-
+        //Update Ticket which got chosen to FIREBASE
         data['ticket/' + this.state.selectedTicket.id] = {
             ticket_id: this.state.selectedTicket.id,
             user_id: this.state.selectedTech, // stored Tech ID
         };
         firebase.database().ref().update(data)
+        
+        //Function to play through after submitting. Priority and escalation level is UPDATED via laravel API
         this.fetchPriority();
         this.fetchEscLevel();
+        
         alert('Tech successfully assigned to ticket!');
 
         this.setState({
@@ -153,11 +161,9 @@ class Helpdesk extends Component {
 
     }
 
-    /* Render the page! */
-    /* TODO : Complete in your own time:
-        Do you think you could split this page into separate sub-components?
-     */
+    //Render Page
     render () {
+
         const vm = this;
         const { selectedTicket, tickets, techUsers } = this.state;
 
@@ -203,6 +209,8 @@ class Helpdesk extends Component {
                             </tbody>
                         </Table>
                     </Col>
+
+
                     {selectedTicket !== null && (
                         <Col md={5}>
                             <Jumbotron style={{padding: 10}}>
@@ -256,6 +264,8 @@ class Helpdesk extends Component {
                             </Jumbotron>
                         </Col>
                     )}
+
+                    
                 </Row>
             </div>
         );

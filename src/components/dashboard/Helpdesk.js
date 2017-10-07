@@ -12,12 +12,9 @@ class Helpdesk extends Component {
             selectedTicket: null,
             techUsers: [],
             selectedTech: null,
-            priority: '1',
-            escLevel: 'low'
+            priority: '',
+            escLevel: ''
         };
-
-        // this.handlePriority = this.handlePriority.bind(this);
-        // this.handleEscLevel = this.handleEscLevel.bind(this);
     }
 
     /* Once component has mounted, fetch from API + firebase */
@@ -104,7 +101,6 @@ class Helpdesk extends Component {
     }
 
     fetchPriority() {
-        
         fetch(apiurl + 'api/tickets/'+ this.state.selectedTicket.id + '/priority', {
             headers: {
               'Accept': 'application/json',
@@ -138,6 +134,8 @@ class Helpdesk extends Component {
 
         /* Add assigned ticket+tech into database*/
         const data = {};
+
+
         data['ticket/' + this.state.selectedTicket.id] = {
             ticket_id: this.state.selectedTicket.id,
             user_id: this.state.selectedTech, // stored Tech ID

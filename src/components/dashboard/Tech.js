@@ -23,10 +23,11 @@ class Tech extends Component {
             tickets: [],
             contentState: {},
             selectedTicket: 1,
-            status: "",
+            status: "In Progress",
             selectedHelpdesk: null,
             helpdeskUsers: [],
-            ticket_details_id: null
+            ticket_details_id: null,
+            escLevel: ''
         };
         
         //BINDING OF FORM ELEMENTS
@@ -81,12 +82,18 @@ class Tech extends Component {
 
 
     // WYSIWYG Function
-    onContentStateChange: Function = (contentState) => {
+    onContentStateChange = (contentState) => {
         this.setState({
           contentState,
         });
     };
 
+    // Change escLevel if necessary
+    handleEscLevel = (e) => {
+        this.setState({
+            escLevel: e.target.value
+        });
+    }
 
     // Check the if the status is changed.
     handleStatusChange = (e) => {
@@ -105,8 +112,7 @@ class Tech extends Component {
     }
 
 
-    //Posting of comments that are styled to the dtabase
-
+    //Posting of comments that are styled to the database
     fetchComment = () => {
         fetch(apiurl + 'api/tickets/'+ this.state.selectedTicket + '/comment', {
             headers: {
@@ -124,7 +130,18 @@ class Tech extends Component {
         console.log(this.state.contentState.blocks[0].text);   
     };
 
-
+    fetchEscLevel() {
+        fetch(apiurl + 'api/tickets/'+ this.state.selectedTicket + '/esclevel', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: 'PUT',
+            body: JSON.stringify({
+                escLevel : this.state.escLevel
+            })
+        });
+    }
 
     // Change status after work
     // If the request is not solved, it will get back to the helpdesk again.
@@ -150,16 +167,32 @@ class Tech extends Component {
         this.setState({
             selectedHelpdesk: e.target.value
         });
-    }
+    };
 
     // Callback function when assign button is clicked.
     resolveTicket = () => {
         this.fetchStatus();
         this.fetchComment();
+        this.fetchEscLevel();
         if(this.state.selectedHelpdesk === null) {
             return;
         }
-    }
+
+        /*  */
+        const data = 'ticket/' + this.state.selectedTicket;
+
+        firebase.database().ref(data).remove();
+        alert('Tech successfully assigned to ticket!');
+
+        console.log("tech user id: " + this.state.selectedHelpdesk);
+
+        this.setState({
+            selectedTicket: null
+        })
+
+        this.fetchTicketToTech();
+
+    };
 
     render () {
         const { tickets, helpdeskUsers } = this.state;
@@ -220,15 +253,22 @@ class Tech extends Component {
 
                 <h3 className="text-uppercase">Ticket Status</h3>
                 <select className="form-control" value={this.state.status} onChange={this.handleStatusChange}>
-                    <option value="Pending">Pending</option>
                     <option value="In Progress">In Progress</option>
                     <option value="Unresolved">Unresolved</option>
                     <option value="Resolved">Resolved</option>
                 </select>
 
-                <h3 className="text-uppercase">Assign to tech</h3>
+                <h3 className="text-uppercase">Select EscLevel</h3>
+                <select id="escLevel" className="form-control" value={this.state.escLevel} onChange={this.handleEscLevel}>
+                    {/*<option value="-1" defaultValue disabled>Select the EscLevel</option>*/}
+                    <option value="Low">Low</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="High">High</option>
+                </select>
+
+                <h3 className="text-uppercase">Assign to Helpdesk</h3>
                 <select className="form-control" onChange={this.handleHelpdeskChange} defaultValue="-1">
-                    <option value="-1" defaultValue disabled>Select a tech user</option>
+                    <option value="-1" defaultValue disabled>Select a helpdesk user</option>
                     {helpdeskUsers.map((user, i) => (
                         <option key={i} value={user.id}>{user.name}</option>
                     ))}

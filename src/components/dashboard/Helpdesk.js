@@ -225,7 +225,11 @@ class Helpdesk extends Component {
                                 <p>
                                     <b>COMMENT: </b><br/>
                                     {selectedTicket.comments.map((comment, i) => (
-                                        <span key={i}>{comment.comment}</span>
+                                        <span key={i}>
+                                            <ul>
+                                                <li>{comment.comment}</li>
+                                            </ul>
+                                        </span>
                                     ))}
                                 </p>
                                 {techUsers.length > 0 && (
@@ -265,7 +269,7 @@ class Helpdesk extends Component {
                         </Col>
                     )}
 
-                    
+
                 </Row>
             </div>
         );

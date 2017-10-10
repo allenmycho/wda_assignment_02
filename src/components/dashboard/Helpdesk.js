@@ -188,6 +188,7 @@ class Helpdesk extends Component {
                             </tr>
                             </thead>
                             <tbody>
+                            {/* Retrieve all the tickets from MySQL database. */}
                             {tickets.map((ticket, i) => (
                                 <tr key={i}>
                                     <td>{ticket.id}</td>
@@ -197,6 +198,7 @@ class Helpdesk extends Component {
                                     <td>{ticket.priority}</td>
                                     <td>{ticket.escLevel}</td>
                                     <td>
+                                        {/* Retrieve and display comments belonging into the ticket. */}
                                         {ticket.comments.map((comment, i) => (
                                             <p key={i}>{comment.comment}</p>
                                         ))}
@@ -238,18 +240,18 @@ class Helpdesk extends Component {
 
                                         <h3 className="text-uppercase">Select Priority</h3>
                                         <select id="priority" className="form-control" value={this.state.priority} onChange={this.handlePriority}>
-                                            {/*<option value="-1" defaultValue disabled>Select the Priority</option>*/}
-                                            <option value="1">1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
+                                            <option value="-1" defaultValue disabled>Select the Priority</option>
+                                            <option value="Low">Low</option>
+                                            <option value="Moderate">Moderate</option>
+                                            <option value="High">High</option>
                                         </select>
 
                                         <h3 className="text-uppercase">Select EscLevel</h3>
                                         <select id="escLevel" className="form-control" value={this.state.escLevel} onChange={this.handleEscLevel}>
-                                            {/*<option value="-1" defaultValue disabled>Select the EscLevel</option>*/}
-                                            <option value="Low">Low</option>
-                                            <option value="Moderate">Moderate</option>
-                                            <option value="High">High</option>
+                                            <option value="-1" defaultValue disabled>Select the EscLevel</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
                                         </select>
 
                                         <h3 className="text-uppercase">Assign to tech</h3>

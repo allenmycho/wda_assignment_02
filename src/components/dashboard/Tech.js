@@ -22,8 +22,8 @@ class Tech extends Component {
         this.state = {
             tickets: [],
             contentState: {},
-            selectedTicket: 1,
-            status: "In Progress",
+            selectedTicket: '',
+            status: 'In Progress',
             selectedHelpdesk: null,
             helpdeskUsers: [],
             ticket_details_id: null,
@@ -66,6 +66,7 @@ class Tech extends Component {
                 });
             })
 
+        // Add more users whenever new helpdesk user is registered in firebase.
         const users = firebase.database().ref('user/')
         users.on('value', (snapshot) => {
             const tempHelp = [];
@@ -130,6 +131,7 @@ class Tech extends Component {
         console.log(this.state.contentState.blocks[0].text);   
     };
 
+    // Update escLevel in MySQL Database
     fetchEscLevel() {
         fetch(apiurl + 'api/tickets/'+ this.state.selectedTicket + '/esclevel', {
             headers: {
@@ -178,7 +180,10 @@ class Tech extends Component {
             return;
         }
 
-        /*  */
+        /*
+         * After the ticket's status is changed,
+         * it gets back to Helpdesk user again.
+         */
         const data = 'ticket/' + this.state.selectedTicket;
 
         firebase.database().ref(data).remove();
@@ -187,7 +192,7 @@ class Tech extends Component {
         console.log("tech user id: " + this.state.selectedHelpdesk);
 
         this.setState({
-            selectedTicket: null
+            selectedTicket: ''
         })
 
         this.fetchTicketToTech();
@@ -230,7 +235,7 @@ class Tech extends Component {
                         <hr/>
                     ):
                     <select className="form-control" value={this.state.selectedTicket} onChange={this.handleIdChange}>
-                        {/*<option value="default" defaultValue disabled>Select the Ticket ID</option>*/}
+                        <option value="default" defaultValue disabled>Select the Ticket ID</option>
                         {tickets.map((ticket, i) => (
                             <option key={i} value={ticket.id}>{ticket.id}</option>
                         ))}
@@ -256,10 +261,10 @@ class Tech extends Component {
 
                 <h3 className="text-uppercase">Select EscLevel</h3>
                 <select id="escLevel" className="form-control" value={this.state.escLevel} onChange={this.handleEscLevel}>
-                    {/*<option value="-1" defaultValue disabled>Select the EscLevel</option>*/}
-                    <option value="Low">Low</option>
-                    <option value="Moderate">Moderate</option>
-                    <option value="High">High</option>
+                    <option value="-1" defaultValue disabled>Select the EscLevel</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
                 </select>
 
                 <h3 className="text-uppercase">Assign to Helpdesk</h3>
